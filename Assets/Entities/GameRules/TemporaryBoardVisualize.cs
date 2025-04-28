@@ -21,6 +21,15 @@
 
         [TabGroup("Board Visualizer")] [SerializeField]
         private GameObject _stickManPrefab;
+        
+        [TabGroup("Board Visualizer")][SerializeField]
+        private Transform gridMap;
+        
+        [TabGroup("Board Visualizer")][SerializeField]
+        private Transform stickmanGroup;
+        
+        [TabGroup("Board Visualizer")][SerializeField]
+        private Transform holeGroup;
 
         // algorithm data
         [TabGroup("Box Data")] [SerializeField]
@@ -48,7 +57,7 @@
 
         //for camera pos
         public Vector2Int Matrix  => _matrix;
-        public int        ExtendY => 4;
+        public int        ExtendY => 6;
 
         private void Awake()
         {
@@ -78,7 +87,7 @@
                 for (int j = 0; j < _matrix.y; j++)
                 {
                     //SharedGameObjectPool.Rent(_tilePrefab, new Vector3(i, 0, j), Quaternion.identity);
-                    Instantiate(_tilePrefab, new Vector3(i, 0, j), Quaternion.identity);
+                    Instantiate(_tilePrefab, new Vector3(i, 0, j), Quaternion.identity, gridMap);
                 }
             }
 
@@ -96,7 +105,7 @@
                         {
                             //var go = SharedGameObjectPool.Rent(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity);
 
-                            var go = Instantiate(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity);
+                            var go = Instantiate(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity, stickmanGroup);
                             
                             var moveStickMan = go.GetComponent<TempMoveStickMan>();
                             if (moveStickMan != null)
@@ -117,7 +126,7 @@
                 foreach (var hole in _holes)
                 {
                     //var go    = SharedGameObjectPool.Rent(_holePrefab, hole.GetMiddlePosition(), Quaternion.identity);
-                    var go         = Instantiate(_holePrefab, hole.GetMiddlePosition(), Quaternion.identity);
+                    var go         = Instantiate(_holePrefab, hole.GetMiddlePosition(), Quaternion.identity, holeGroup);
                     var holePrefab = go.GetComponent<ClickToHole>();
                     holePrefab.SetData(hole);
                     holePrefab.id      =  count++;
@@ -126,7 +135,6 @@
             }
             
             _containerManager.SetUpContainers(_containerQueues, _staticContainer, _waitToDistributedQueue);
-            _containerManager.transform.position = new Vector3(1.5f, 0, _matrix.y + 2);
         }
 
         [Button]
