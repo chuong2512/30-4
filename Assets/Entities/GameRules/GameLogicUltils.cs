@@ -9,7 +9,7 @@
             switch (holeID)
             {
                 case 0:
-                    return Color.blue;
+                    return Color.clear;
                 case 1:
                     return Color.red;
                 case 2:

@@ -4,10 +4,19 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class TempMoveStickMan : MonoBehaviour
+    public class TempMoveStickMan : MonoBehaviour, IDataSetter
     {
         public int id = -1;
-        
+
+        public void SetData(BoxData boxData)
+        {
+            id = boxData.id;
+
+            var color = GameLogicUltils.GetColor(boxData.id);
+            GetComponentInChildren<Renderer>().material.color = color;
+            transform.localScale                              = new Vector3(boxData.size.x, 1, boxData.size.y);
+        }
+
         public void MoveStickMan(List<Vector2Int> pathValue) { StartCoroutine(MoveAlongPathCoroutine(pathValue)); }
 
         private IEnumerator MoveAlongPathCoroutine(List<Vector2Int> pathValue)
@@ -23,7 +32,7 @@
                 }
 
                 transform.position = targetPosition; // Snap to position after reaching
-                yield return new WaitForSeconds(0.2f); // Optional delay between reaching points
+                yield return new WaitForSeconds(0.1f); // Optional delay between reaching points
             }
         }
     }

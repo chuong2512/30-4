@@ -46,8 +46,13 @@
         private KeyValuePair<int, int>                  _output;
         private Dictionary<int, List<TempMoveStickMan>> _stickMenByBoxId;
 
+        //for camera pos
+        public Vector2Int Matrix  => _matrix;
+        public int        ExtendY => 4;
+
         private void Awake()
         {
+            //parse data from file text to get Matrix, Boxes, Holes, Queue,..
             _gameAlgorithm   = new GameAlgorithm(_matrix, _boxes, _holes);
             _stickMenByBoxId = new Dictionary<int, List<TempMoveStickMan>>();
 
@@ -73,8 +78,7 @@
                 for (int j = 0; j < _matrix.y; j++)
                 {
                     //SharedGameObjectPool.Rent(_tilePrefab, new Vector3(i, 0, j), Quaternion.identity);
-
-                    GameObject.Instantiate(_tilePrefab, new Vector3(i, 0, j), Quaternion.identity);
+                    Instantiate(_tilePrefab, new Vector3(i, 0, j), Quaternion.identity);
                 }
             }
 
@@ -93,11 +97,11 @@
                             //var go = SharedGameObjectPool.Rent(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity);
 
                             var go = Instantiate(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity);
-                            go.GetComponentInChildren<Renderer>().material.color = color;
+                            
                             var moveStickMan = go.GetComponent<TempMoveStickMan>();
                             if (moveStickMan != null)
                             {
-                                moveStickMan.id = box.id;
+                                moveStickMan.SetData(box);
                                 stickMen.Add(moveStickMan);
                             }
                         }
@@ -112,17 +116,15 @@
                 int count = 0;
                 foreach (var hole in _holes)
                 {
-                    var color = GameLogicUltils.GetColor(hole.id);
                     //var go    = SharedGameObjectPool.Rent(_holePrefab, hole.GetMiddlePosition(), Quaternion.identity);
-                    var go = Instantiate(_holePrefab, hole.GetMiddlePosition(), Quaternion.identity);
-                    go.GetComponentInChildren<Renderer>().material.color = color;
-                    go.transform.localScale                              = new Vector3(hole.size.x, 1, hole.size.y);
-                    var clicker = go.GetComponent<ClickToHole>();
-                    clicker.id      =  count++;
-                    clicker.onClick += Process;
+                    var go         = Instantiate(_holePrefab, hole.GetMiddlePosition(), Quaternion.identity);
+                    var holePrefab = go.GetComponent<ClickToHole>();
+                    holePrefab.SetData(hole);
+                    holePrefab.id      =  count++;
+                    holePrefab.onClick += Process;
                 }
             }
-
+            
             _containerManager.SetUpContainers(_containerQueues, _staticContainer, _waitToDistributedQueue);
             _containerManager.transform.position = new Vector3(1.5f, 0, _matrix.y + 2);
         }
