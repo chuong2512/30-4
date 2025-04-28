@@ -21,14 +21,14 @@
 
         [TabGroup("Board Visualizer")] [SerializeField]
         private GameObject _stickManPrefab;
-        
-        [TabGroup("Board Visualizer")][SerializeField]
+
+        [TabGroup("Board Visualizer")] [SerializeField]
         private Transform gridMap;
-        
-        [TabGroup("Board Visualizer")][SerializeField]
+
+        [TabGroup("Board Visualizer")] [SerializeField]
         private Transform stickmanGroup;
-        
-        [TabGroup("Board Visualizer")][SerializeField]
+
+        [TabGroup("Board Visualizer")] [SerializeField]
         private Transform holeGroup;
 
         // algorithm data
@@ -106,7 +106,7 @@
                             //var go = SharedGameObjectPool.Rent(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity);
 
                             var go = Instantiate(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity, stickmanGroup);
-                            
+
                             var moveStickMan = go.GetComponent<TempMoveStickMan>();
                             if (moveStickMan != null)
                             {
@@ -133,8 +133,9 @@
                     holePrefab.onClick += Process;
                 }
             }
-            
+
             _containerManager.SetUpContainers(_containerQueues, _staticContainer, _waitToDistributedQueue);
+            _containerManager.transform.position = new Vector3(_matrix.x / 2f, 0, _matrix.y + 3);
         }
 
         [Button]
