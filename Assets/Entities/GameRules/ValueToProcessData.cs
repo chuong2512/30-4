@@ -1,32 +1,32 @@
-namespace  HoleBox
+namespace HoleBox
 {
     public class IngressData
     {
-        public int id;
-        public int number;
-        
+        public int ID;
+        public int Number;
+
         public IngressData(int id, int number)
         {
-            this.id     = id;
-            this.number = number;
+            this.ID     = id;
+            this.Number = number;
         }
     }
 
     public class DistributedData
     {
-        public enum  DistributedType
+        public enum DistributedType
         {
             UfoToOnQueue,
             UfoToStatic,
             StaticToOnQueue,
         }
-        
+
         public DistributedType type;
         public int             fromId;
         public int             toId;
         public int             number;
         public int             colorId;
-        
+
         public DistributedData(DistributedType type, int fromId, int toId, int number, int colorId)
         {
             this.type    = type;

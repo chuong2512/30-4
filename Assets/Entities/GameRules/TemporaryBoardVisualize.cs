@@ -1,8 +1,6 @@
 ﻿namespace HoleBox
 {
-    using System;
     using System.Collections.Generic;
-    using HoleBox;
     using HoleBox;
     using Sirenix.OdinInspector;
     using UnityEditor;
@@ -31,6 +29,8 @@
         [TabGroup("Board Visualizer")] [SerializeField]
         private Transform holeGroup;
 
+        #region Level Data
+
         // algorithm data
         [TabGroup("Box Data")] [SerializeField]
         private Vector2Int _matrix;
@@ -42,12 +42,15 @@
         private BoxData[] _holes;
 
         [TabGroup("Container Data")] [SerializeField]
-        private List<ContainerData> _staticContainer;
+        private StaticContainerConfig _staticContainerConfig;
 
         [TabGroup("Container Data")] [SerializeField]
         private List<ContainerQueueData> _containerQueues;
 
+        #endregion
+
         private GameAlgorithm                           _gameAlgorithm;
+        private ContainerQueueData                      _staticContainer;
         private WaitToProcessQueue<IngressData>         _waitToProcessQueue;
         private WaitToProcessQueue<DistributedData>     _waitToDistributedQueue;
         private ContainerLogic                          _containerLogic;
@@ -65,6 +68,7 @@
             _gameAlgorithm   = new GameAlgorithm(_matrix, _boxes, _holes);
             _stickMenByBoxId = new Dictionary<int, List<TempMoveStickMan>>();
 
+            _staticContainer        = new ContainerQueueData(_staticContainerConfig);
             _waitToProcessQueue     = new WaitToProcessQueue<IngressData>();
             _waitToDistributedQueue = new WaitToProcessQueue<DistributedData>();
             _containerLogic         = new ContainerLogic(_containerQueues, _staticContainer, _waitToProcessQueue, _waitToDistributedQueue);
@@ -86,7 +90,6 @@
             {
                 for (int j = 0; j < _matrix.y; j++)
                 {
-                    //SharedGameObjectPool.Rent(_tilePrefab, new Vector3(i, 0, j), Quaternion.identity);
                     Instantiate(_tilePrefab, new Vector3(i, 0, j), Quaternion.identity, gridMap);
                 }
             }
@@ -103,8 +106,6 @@
                     {
                         for (int j = 0; j < box.size.y; j++)
                         {
-                            //var go = SharedGameObjectPool.Rent(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity);
-
                             var go = Instantiate(_stickManPrefab, new Vector3(box.position.x + i, 0, box.position.y + j), Quaternion.identity, stickmanGroup);
 
                             var moveStickMan = go.GetComponent<TempMoveStickMan>();
@@ -125,7 +126,6 @@
                 int count = 0;
                 foreach (var hole in _holes)
                 {
-                    //var go    = SharedGameObjectPool.Rent(_holePrefab, hole.GetMiddlePosition(), Quaternion.identity);
                     var go         = Instantiate(_holePrefab, hole.GetMiddlePosition(), Quaternion.identity, holeGroup);
                     var holePrefab = go.GetComponent<ClickToHole>();
                     holePrefab.SetData(hole);
@@ -134,8 +134,8 @@
                 }
             }
 
-            _containerManager.SetUpContainers(_containerQueues, _staticContainer, _waitToDistributedQueue);
-            _containerManager.transform.position = new Vector3(_matrix.x / 2f, 0, _matrix.y + 3);
+            _containerManager.SetUpContainers(_containerQueues, _staticContainer, _waitToDistributedQueue, _waitToProcessQueue);
+            _containerManager.transform.position = new Vector3(_matrix.x / 2f, 0, _matrix.y + 1);
         }
 
         [Button]

@@ -8,6 +8,7 @@
         {
             switch (holeID)
             {
+                case -1:
                 case 0:
                     return Color.clear;
                 case 1:
@@ -17,7 +18,7 @@
                 case 3:
                     return Color.yellow;
             }
-            
+
             return Color.cyan;
         }
     }
