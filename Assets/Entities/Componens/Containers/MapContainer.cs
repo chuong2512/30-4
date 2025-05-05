@@ -22,7 +22,7 @@
 
         [SerializeField, ReadOnly] private List<StaticContainer> _staticContainers = new List<StaticContainer>();
         [SerializeField, ReadOnly] private List<QueueContainer>  _queueContainers  = new List<QueueContainer>();
-        
+
         public void SetUpContainers(List<ContainerQueueData> containerQueues, ContainerQueueData staticContainer, WaitToProcessQueue<DistributedData> waitToDistributedQueue,
             WaitToProcessQueue<IngressData> waitToProcessQueue)
         {
@@ -49,7 +49,7 @@
             }
 
             var colCount = _containerQueues.Count;
-            
+
             for (int i = 0; i < colCount; i++)
             {
                 var queueContainerData = _containerQueues[i].containerDatas;
@@ -73,18 +73,25 @@
                 }
             }
         }
-        
+
         public void UpdateQueue(QueueContainer queue)
         {
-            _queueContainers.Remove(queue);
-            
-            for (int i = 0; i < _queueContainers.Count; i++)
+            MovementThread.Instance.EnqueueAction(async () =>
             {
-                if (_queueContainers[i].Column == queue.Column)
+                _queueContainers.Remove(queue);
+                for (int i = 0; i < _queueContainers.Count; i++)
                 {
-                    _queueContainers[i].MoveDown(_spawnRange);
+                    if (_queueContainers[i].Column == queue.Column)
+                    {
+                        await _queueContainers[i].MoveDown(_spawnRange);
+                    }
                 }
-            }
+
+                if (_queueContainers.Count == 0)
+                {
+                    Debug.LogError("YOU WIN!!!!!!!");
+                }
+            });
         }
     }
 }

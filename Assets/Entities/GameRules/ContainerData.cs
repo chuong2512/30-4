@@ -12,6 +12,7 @@ namespace HoleBox
         public int capacity = 32;
 
         public Action<int> OnUpdateQuantity = null;
+        public Action<int> OnMinus          = null;
         public Action      OnFullStack      = null;
         public Action      OnChangeID       = null;
         public Action      OnEmptyStack     = null;
@@ -43,17 +44,10 @@ namespace HoleBox
             }
         }
 
-        public void SetEmpty()
-        {
-            number = 0;
-            id     = -1;
-            OnEmptyStack?.Invoke();
-        }
-
         public void Minus(int count)
         {
             number -= count;
-
+            OnMinus?.Invoke(count);
             if (number > 0) return;
             number = 0;
             id     = -1;

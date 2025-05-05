@@ -148,15 +148,34 @@
             }
 
             _gameAlgorithm.Process(selectedIndex, out _paths, out _output);
-            _waitToProcessQueue.Enqueue(new IngressData(_output.Key, _output.Value));
-
+            
+            if(_paths.Count == 0)
+            {
+                Debug.Log("No path found");
+                return;
+            }
+            
+            var ingressData = new IngressData(_output.Key, _output.Value);
+            
             // Move stickmen according to the output
+            bool first = true;
             foreach (var path in _paths)
             {
                 var stickMen = _stickMenByBoxId[path.Key];
                 foreach (var stickMan in stickMen)
                 {
-                    stickMan.MoveStickMan(path.Value);
+                    if (first)
+                    {
+                        stickMan.MoveStickMan(path.Value, () =>
+                        {
+                            _waitToProcessQueue.Enqueue(ingressData);
+                        });
+                        first = false;
+                    }
+                    else
+                    {
+                        stickMan.MoveStickMan(path.Value);
+                    }
                 }
             }
         }

@@ -12,7 +12,7 @@
         private readonly WaitToProcessQueue<DistributedData> _waitToDistributedQueue;
 
         public Action<IngressData> OnLoseGame = null;
-        
+
         public ContainerLogic(List<ContainerQueueData> containerQueues, ContainerQueueData staticContainers,
             WaitToProcessQueue<IngressData> waitToProcessQueue,
             WaitToProcessQueue<DistributedData> waitToDistributedQueue)
@@ -71,7 +71,7 @@
                 if (container.ID == data.ID)
                 {
                     var diff = container.Capacity - container.Number - data.Number;
-                    
+
                     container.UpdateNumber(data.Number);
                     if (diff >= 0)
                     {
@@ -82,19 +82,19 @@
                             data.Number,
                             data.ID
                         ));
-                        
+
                         if (diff == 0)
                         {
                             queue.Dequeue();
                         }
-                        
+
                         _waitToProcessQueue.Dequeue();
                         distributed = true;
                         break;
                     }
                     else
                     {
-                        data.Number      = -diff;
+                        data.Number = -diff;
                         _waitToDistributedQueue.Enqueue(new DistributedData(
                             DistributedData.DistributedType.UfoToOnQueue,
                             -1,
@@ -116,9 +116,9 @@
                     {
                         staticContainer.ChangeID(data.ID);
                         var diff = staticContainer.Capacity - staticContainer.Number - data.Number;
-                    
+
                         staticContainer.UpdateNumber(data.Number);
-                        
+
                         if (diff >= 0)
                         {
                             _waitToDistributedQueue.Enqueue(new DistributedData(
@@ -134,7 +134,7 @@
                         }
                         else
                         {
-                            data.Number            = -diff;
+                            data.Number = -diff;
                             _waitToDistributedQueue.Enqueue(new DistributedData(
                                 DistributedData.DistributedType.UfoToStatic,
                                 -1,
@@ -172,10 +172,11 @@
                         if (container.ID == staticContainer.ID)
                         {
                             var diff = container.Remaining - staticContainer.Number;
-                           
+
+                            var delta = staticContainer.Number;
                             staticContainer.Minus(container.Remaining);
-                            container.UpdateNumber(staticContainer.Number);
-                            
+                            container.UpdateNumber(delta);
+
                             if (diff >= 0)
                             {
                                 _waitToDistributedQueue.Enqueue(new DistributedData(
@@ -190,9 +191,8 @@
                                 {
                                     queue.Dequeue();
                                 }
-                                
-                                staticContainer.SetEmpty();
-                                moved                  =  true;
+
+                                moved = true;
                                 break;
                             }
                             else
